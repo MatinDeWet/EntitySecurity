@@ -4,13 +4,13 @@
 
 ## Packedges
 ### EntitySecurity.Domain
-[![NuGet Version](https://img.shields.io/nuget/v/MatinDeWet.EntitySecurity.Domain)](https://www.nuget.org/packages/MatinDeWet.EntitySecurity) 
+[![NuGet Version](https://img.shields.io/nuget/v/MatinDeWet.EntitySecurity.Domain)](https://www.nuget.org/packages/MatinDeWet.EntitySecurity.Domain) 
 
 ### EntitySecurity.Contract
-[![NuGet Version](https://img.shields.io/nuget/v/MatinDeWet.EntitySecurity.Contract)](https://www.nuget.org/packages/MatinDeWet.EntitySecurity)
+[![NuGet Version](https://img.shields.io/nuget/v/MatinDeWet.EntitySecurity.Contract)](https://www.nuget.org/packages/MatinDeWet.EntitySecurity.Contract)
 
 ### EntitySecurity.Logic
-[![NuGet Version](https://img.shields.io/nuget/v/MatinDeWet.EntitySecurity.Logic)](https://www.nuget.org/packages/MatinDeWet.EntitySecurity) 
+[![NuGet Version](https://img.shields.io/nuget/v/MatinDeWet.EntitySecurity.Logic)](https://www.nuget.org/packages/MatinDeWet.EntitySecurity.Logic) 
 
 Entity Security is a library that allows you to secure your entities in your application.
 

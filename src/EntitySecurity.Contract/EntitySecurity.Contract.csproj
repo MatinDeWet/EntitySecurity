@@ -7,7 +7,7 @@
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	<PackageId>MatinDeWet.EntitySecurity.Contract</PackageId>
-	<Version>1.0.0</Version>
+	<Version>1.0.1</Version>
 	<Authors>MatinDeWet</Authors>
 	<Product>EntitySecurity.Contract</Product>
 	<RepositoryUrl>https://github.com/MatinDeWet/EntitySecurity</RepositoryUrl>
