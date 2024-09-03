@@ -4,6 +4,26 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	<PackageId>MatinDeWet.EntitySecurity.Domain</PackageId>
+	<Version>1.0.0</Version>
+	<Authors>MatinDeWet</Authors>
+	<Product>EntitySecurity.Domain</Product>
+	<RepositoryUrl>https://github.com/MatinDeWet/EntitySecurity</RepositoryUrl>
+	<PackageProjectUrl>https://github.com/MatinDeWet/EntitySecurity</PackageProjectUrl>
+	<Title>EntitySecurity.Domain</Title>
   </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
