@@ -38,6 +38,7 @@ namespace EntitySecurity.Logic.Repository
                             .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IProtected<>))
                             .GetGenericArguments()[0];
 
+                        // Check if T is assignable to the lock's type
                         if (lockType.IsAssignableFrom(typeof(T)))
                         {
                             var securedQuery = InvokeSecuredMethod<T>(entityLock, _info.GetIdentityId());
@@ -124,16 +125,24 @@ namespace EntitySecurity.Logic.Repository
 
                 foreach (var entityLock in applicableLocks)
                 {
-                    var protectedLock = entityLock as IProtected;
-                    var hasAccessMethod = protectedLock.GetType().GetMethod("HasAccess");
+                    var lockInterface = entityLock.GetType()
+                        .GetInterfaces()
+                        .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IProtected<>));
+                    var lockType = lockInterface.GetGenericArguments()[0];
 
-                    if (hasAccessMethod != null)
+                    // Check if the lock's type is assignable from the object's runtime type
+                    if (lockType.IsAssignableFrom(obj.GetType()))
                     {
-                        var hasAccessTask = (Task<bool>)hasAccessMethod.Invoke(protectedLock, new object[] { obj, operation, _info.GetIdentityId(), cancellationToken })!;
-                        var hasAccess = await hasAccessTask!;
+                        var hasAccessMethod = entityLock.GetType().GetMethod("HasAccess");
 
-                        if (!hasAccess)
-                            return false;
+                        if (hasAccessMethod != null)
+                        {
+                            var hasAccessTask = (Task<bool>)hasAccessMethod.Invoke(entityLock, new object[] { obj, operation, _info.GetIdentityId(), cancellationToken })!;
+                            var hasAccess = await hasAccessTask;
+
+                            if (!hasAccess)
+                                return false;
+                        }
                     }
                 }
             }
