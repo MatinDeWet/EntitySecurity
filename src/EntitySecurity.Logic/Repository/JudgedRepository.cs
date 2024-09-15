@@ -25,11 +25,47 @@ namespace EntitySecurity.Logic.Repository
         {
             if (!_info.HasRole(EntitySecurityRoleEnum.Developer))
             {
-                if (_protection.FirstOrDefault(x => x.IsMatch(typeof(T))) is IProtected<T> entityLock)
-                    return entityLock.Secured(_info.GetIdentityId());
+                var applicableLocks = _protection.Where(x => x.IsMatch(typeof(T))).ToList();
+
+                if (applicableLocks.Any())
+                {
+                    IQueryable<T> query = null!;
+
+                    foreach (var entityLock in applicableLocks)
+                    {
+                        var lockType = entityLock.GetType()
+                            .GetInterfaces()
+                            .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IProtected<>))
+                            .GetGenericArguments()[0];
+
+                        if (lockType.IsAssignableFrom(typeof(T)))
+                        {
+                            var securedQuery = InvokeSecuredMethod<T>(entityLock, _info.GetIdentityId());
+
+                            query = query == null ? securedQuery : query.Intersect(securedQuery);
+                        }
+                    }
+
+                    return query ?? _context.Set<T>();
+                }
             }
 
             return _context.Set<T>();
+        }
+
+        private IQueryable<T> InvokeSecuredMethod<T>(IProtected entityLock, int identityId) where T : class
+        {
+            var securedMethod = entityLock.GetType().GetMethod("Secured");
+
+            if (securedMethod == null)
+                throw new InvalidOperationException("Secured method not found on lock.");
+
+            var securedQuery = securedMethod.Invoke(entityLock, new object[] { identityId }) as IQueryable;
+
+            if (securedQuery == null)
+                throw new InvalidOperationException("Secured method did not return a queryable.");
+
+            return securedQuery.Cast<T>();
         }
 
         public virtual async Task InsertAsync<T>(T obj, CancellationToken cancellationToken) where T : class
@@ -82,17 +118,27 @@ namespace EntitySecurity.Logic.Repository
 
         private async Task<bool> HasAccess<T>(T obj, RepositoryOperationEnum operation, CancellationToken cancellationToken) where T : class
         {
-            var result = true;
-
             if (!_info.HasRole(EntitySecurityRoleEnum.Developer))
             {
-                if (_protection.FirstOrDefault(x => x.IsMatch(typeof(T))) is IProtected<T> entityLock)
+                var applicableLocks = _protection.Where(x => x.IsMatch(typeof(T))).ToList();
+
+                foreach (var entityLock in applicableLocks)
                 {
-                    result = await entityLock.HasAccess(obj, operation, _info.GetIdentityId(), cancellationToken);
+                    var protectedLock = entityLock as IProtected;
+                    var hasAccessMethod = protectedLock.GetType().GetMethod("HasAccess");
+
+                    if (hasAccessMethod != null)
+                    {
+                        var hasAccessTask = (Task<bool>)hasAccessMethod.Invoke(protectedLock, new object[] { obj, operation, _info.GetIdentityId(), cancellationToken })!;
+                        var hasAccess = await hasAccessTask!;
+
+                        if (!hasAccess)
+                            return false;
+                    }
                 }
             }
 
-            return result;
+            return true;
         }
     }
 }

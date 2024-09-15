@@ -8,7 +8,7 @@ namespace EntitySecurity.Logic.Lock
 
         public virtual bool IsMatch(Type t)
         {
-            return typeof(T).IsAssignableFrom(t);
+            return t.IsAssignableFrom(typeof(T));
         }
 
         public abstract Task<bool> HasAccess(T obj, RepositoryOperationEnum operation, int identityId, CancellationToken cancellationToken);
