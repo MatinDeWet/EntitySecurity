@@ -463,7 +463,7 @@ namespace EntitySecurity.Logic.Tests.Unit.Tests
             var testEntity = new TestEntity { Id = 1, Name = "Entity1" };
 
             // Act and Assert
-            var hasAccessMethod = repository.GetType().GetMethod("HasAccess", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).MakeGenericMethod(typeof(ITestInterface));
+            var hasAccessMethod = repository.GetType().GetMethod("HasAccess", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.MakeGenericMethod(typeof(ITestInterface));
             var exception = await Record.ExceptionAsync(() => (Task<bool>)hasAccessMethod.Invoke(repository, new object[] { testEntity, RepositoryOperationEnum.Update, CancellationToken.None })!);
 
             Assert.Null(exception);
